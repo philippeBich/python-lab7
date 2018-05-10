@@ -16,7 +16,7 @@ limitations under the License
 @author: Teodoro Montanaro, Luigi De Russis, Alberto Monge Roffarello
 """
 
-import sqlite3
+import sqlite3, os
 
 
 def insert_task(text, urgent):
@@ -55,6 +55,7 @@ def get_tasks():
 
     tasks = []
     sql = "SELECT id_task, todo, urgent  FROM task"
+
     conn = sqlite3.connect("db/task_list.db")
 
     # to remove u from sqlite3 cursor.fetchall() results

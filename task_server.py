@@ -7,7 +7,7 @@ Last updated on Apr 30, 2018
 @author: Luigi De Russis, Teodoro Montanaro, Alberto Monge Roffarello
 """
 
-from flask import Flask, jsonify, abort, request, Response, render_template
+from flask import Flask, jsonify, abort, request, Response, render_template, url_for
 from flask_bootstrap import Bootstrap
 
 import db_interaction
@@ -17,7 +17,7 @@ Bootstrap(app)
 
 # ---------- FRONT-END Single-page application ------------
 
-@app.route('/tasks.html')
+@app.route('/')
 def tasks():
     return render_template("tasks.html")
 
