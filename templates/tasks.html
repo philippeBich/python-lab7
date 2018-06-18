@@ -1,4 +1,3 @@
-{% extends "bootstrap/base.html" %}
 {% block title %}Task List{% endblock %}
 
 {% block scripts %}
@@ -20,7 +19,9 @@
                 Task:
                 <input type="text" id = "taskDescription" class="form-control" name="description"/>
             </div>
-            <button class="form-control" id="addTask">Add</button>
+            <input type="hidden" id="info" value="value" name="info">
+            <input type="checkbox" id="taskUrgent" name="urgent">
+            <input type="submit" class="form-control" id="addTask" value="Add">
         </form>
     </div>
 </div>

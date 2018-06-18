@@ -3,12 +3,13 @@
 """
 Created on Apr 13, 2015
 Last updated on Apr 30, 2018
-
 @author: Luigi De Russis, Teodoro Montanaro, Alberto Monge Roffarello
 """
 
 from flask import Flask, jsonify, abort, request, Response, render_template
 from flask_bootstrap import Bootstrap
+
+
 
 import db_interaction
 
@@ -17,7 +18,7 @@ Bootstrap(app)
 
 # ---------- FRONT-END Single-page application ------------
 
-@app.route('/tasks.html')
+@app.route('/')
 def tasks():
     return render_template("tasks.html")
 
@@ -39,7 +40,7 @@ def get_tasks():
     # return the task data
     return jsonify({'tasks': tasks})
 
-@app.route('/api/v1.0/tasks/<int:task_id>', methods=['GET'])
+@app.route('/api/v1.0/getTask/<int:task_id>', methods=['GET'])
 def get_task(task_id):
     # get the task
     task = db_interaction.get_task(int(task_id))
@@ -52,7 +53,7 @@ def get_task(task_id):
     return jsonify({'task': prepare_for_json(task)})
 
 
-@app.route('/api/v1.0/tasks', methods=['POST'])
+@app.route('/api/v1.0/newTask', methods=['POST'])
 def insert_task():
     # get the request body
     add_request = request.json
@@ -70,29 +71,35 @@ def insert_task():
     # return an error in case of problems
     abort(403)
 
-@app.route('/api/v1.0/tasks/<int:task_id>', methods=['PUT'])
-def update_task(task_id):
+@app.route('/api/v1.0/updateTask', methods=['POST'])
+def update_task():
+
 
     # get the request body
     add_request = request.json
 
+
     # check whether a task is present in the request or not
     if add_request is not None and ('description' and 'urgent') in add_request:
+
         text = add_request['description']
         urgent = add_request['urgent']
+        id = add_request['id']
         # update the task
-        task = db_interaction.update_task(int(task_id),text,urgent)
+        db_interaction.update_task(int(id),text,urgent)
+
 
         return Response(status=200)
 
     # return an error in case of problems
     abort(403)
 
-@app.route('/api/v1.0/tasks/<int:task_id>', methods=['DELETE'])
-def delete_task(task_id):
+@app.route('/api/v1.0/deleteTask', methods=['POST'])
+def delete_task():
+    id=request.json
 
     # delete the task
-    task = db_interaction.remove_task_by_id(int(task_id))
+    task = db_interaction.remove_task_by_id(int(id))
 
     return Response(status=200)
 

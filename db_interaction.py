@@ -2,12 +2,10 @@
 Created on Apr 11, 2016
 Last updated on Apr 30, 2018
 Copyright (c) 2017-2018 Teodoro Montanaro, Luigi De Russis, Alberto Monge Roffarello
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
     http://www.apache.org/licenses/LICENSE-2.0
-
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,22 +14,23 @@ limitations under the License
 @author: Teodoro Montanaro, Luigi De Russis, Alberto Monge Roffarello
 """
 
-import sqlite3
+import pymysql
+
 
 
 def insert_task(text, urgent):
     """
     :param text: text that we want to insert as task in the db
     :param urgent: 0 if the task is not urgent, 1 otherwise
-
     Insert a task in the database
     """
 
     # prepare the query
-    sql = """INSERT INTO task(todo, urgent) VALUES (?, ?)"""
+    sql = """INSERT INTO tasks(text, urgent) VALUES (%s, %s)"""
 
     # connect to the db
-    conn = sqlite3.connect("db/task_list.db")
+    conn = pymysql.connect(user='root', password='qwertyuiop',
+                           database='tasks', host='localhost')
     cursor = conn.cursor()
 
     try:
@@ -54,11 +53,11 @@ def get_tasks():
     """
 
     tasks = []
-    sql = "SELECT id_task, todo, urgent  FROM task"
-    conn = sqlite3.connect("db/task_list.db")
+    sql = "SELECT id_task, text, urgent  FROM tasks"
+    conn = pymysql.connect(user='root', password='qwertyuiop',
+                           database='tasks', host='localhost')
 
-    # to remove u from sqlite3 cursor.fetchall() results
-    conn.text_factory = sqlite3.OptimizedUnicode
+    #
 
     cursor = conn.cursor()
     cursor.execute(sql)
@@ -76,18 +75,18 @@ def get_tasks():
 def get_task(id_task):
     """
     :param id_task: unique identifier for the task we want to retrieve
-
     Get a specified task from the database
     """
 
     # prepare the query
-    sql = "SELECT id_task, todo, urgent FROM task WHERE id_task = ?"
+    sql = "SELECT id_task, text, urgent FROM tasks WHERE id_task = %s"
 
     # connect to the db
-    conn = sqlite3.connect("db/task_list.db")
+    conn = pymysql.connect(user='root', password='qwertyuiop',
+                           database='tasks', host='localhost')
 
-    # to remove u from sqlite3 cursor.fetchall() results
-    conn.text_factory = sqlite3.OptimizedUnicode
+
+
 
     cursor = conn.cursor()
     cursor.execute(sql, (id_task, ))
@@ -103,15 +102,15 @@ def get_task(id_task):
 def remove_task_by_id(id_task):
     """
     :param id_task: unique identifier for the task we want to remove
-
     Remove a specific task from the db
     """
 
     # prepare the query
-    sql = "DELETE FROM task WHERE id_task = ?"
+    sql = "DELETE FROM tasks WHERE id_task = %s"
 
     # connect to the db
-    conn = sqlite3.connect("db/task_list.db")
+    conn = pymysql.connect(user='root', password='qwertyuiop',
+                           database='tasks', host='localhost')
     cursor = conn.cursor()
 
     try:
@@ -133,15 +132,15 @@ def update_task(id_task, text, urgent):
     :param id_task: it represents the task id of the element we want to update
     :param text: text that we want to insert as task in the db
     :param urgent: 0 if the task is not urgent, 1 otherwise
-
     Update a task in the database
     """
 
     # prepare the query
-    sql = """UPDATE task SET todo=?, urgent=? WHERE id_task = ?"""
+    sql = """UPDATE tasks SET text=%s, urgent=%s WHERE id_task = %s"""
 
     # connect to the db
-    conn = sqlite3.connect("db/task_list.db")
+    conn = pymysql.connect(user='root', password='qwertyuiop',
+                           database='tasks', host='localhost')
     cursor = conn.cursor()
 
     try:
@@ -156,32 +155,3 @@ def update_task(id_task, text, urgent):
 
     # close the connection
     conn.close()
-
-
-
-def get_filtered_tasks(search_substring):
-    """
-    :param search_substring: it represents the string that will be used as filter for tasks
-
-    Get filtered existing tasks from the database
-    """
-
-    tasks = []
-    sql = "SELECT id_task, todo, urgent  FROM task WHERE todo LIKE ?"
-    text = "%"+search_substring + "%"
-    conn = sqlite3.connect("db/task_list.db")
-
-    # to remove u from sqlite3 cursor.fetchall() results
-    conn.text_factory = sqlite3.OptimizedUnicode
-
-    cursor = conn.cursor()
-    cursor.execute(sql, (text, ) )
-
-    results = cursor.fetchall()
-
-    for task in results:
-        tasks.append(task)
-
-    conn.close()
-
-    return tasks
